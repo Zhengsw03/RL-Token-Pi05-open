@@ -1,0 +1,23 @@
+RL-Token-Pi05
+Copyright 2026 The RL-Token-Pi05 authors.
+
+This product includes software developed as part of the following projects:
+
+1. LeRobot (https://github.com/huggingface/lerobot)
+   Copyright 2024 The Hugging Face team.
+   Licensed under the Apache License, Version 2.0.
+
+   The `lerobot/` directory is a modified copy (vendored fork) of LeRobot. It is
+   distributed under the same license; the original license text is kept at
+   `lerobot/LICENSE`. The policy code added to the fork lives in
+   `lerobot/src/lerobot/policies/pi05_rlt/`.
+
+2. The LeRobot Pi0.5 policy implementations and other dependencies pulled in by
+   `lerobot/pyproject.toml`, each under its own license.
+
+3. ZTE and the ZTE logo are trademarks of ZTE Corporation. The logo files in
+   `assets/` come from the official ZTE website and are used only to identify the
+   organization that supported this work. The method implemented here is described
+   in "RL Token: Bootstrapping Online RL with Vision-Language-Action Models"
+   (arXiv:2604.23073) by the Physical Intelligence team; this repository is an
+   independent implementation of that method.

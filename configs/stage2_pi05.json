@@ -1,0 +1,98 @@
+{
+  // ═══════════════════════════════════════════════════════════════════
+  //  Stage 2 online RL config (paper-aligned)
+  //  Usage: python scripts/train_rlt_stage2_pi05.py --config configs/stage2_pi05.json
+  //  Note: this file supports // line comments and /* block comments (JSONC);
+  //        "//" inside strings is not affected.
+  // ═══════════════════════════════════════════════════════════════════
+
+  // ── 1. Models & weights (frozen; only Actor/Critic are trained) ────
+  // Replace every path below with your own local checkpoints before use.
+  "pi05_path": "/path/to/pi05/pretrained_model",   // frozen π0.5 base
+  "rlt_checkpoint": "/path/to/rlt_stage1/best_checkpoint.pt",  // Stage 1 RL Token encoder
+  "tokenizer_path": "/path/to/paligemma_tokenizer",  // π0.5 language tokenizer
+  "stats_path": "/path/to/dataset/meta/stats.json",   // quantile normalization stats
+
+  // ── 2. Task & hardware ─────────────────────────────────────────────
+  "task": "Stack the red cube on top of the green cube",  // task instruction (fixed)
+  "follower_port": "/dev/ttyACM0",                  // follower (actuated) arm serial port
+  "leader_port": "/dev/ttyACM1",                    // leader (teleop) arm serial port
+  "follower_id": "so101_follower",
+  "leader_id": "so101_leader",
+  "camera_names": ["top", "wrist"],                 // physical camera names (order)
+  "cameras": {                                      // camera devices: opencv index or path
+    "top":  { "type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30 },
+    "wrist": { "type": "opencv", "index_or_path": 1, "width": 640, "height": 480, "fps": 30 }
+  },
+  "camera_map": {                                   // physical camera → model feature slot
+    "top": "observation.images.top",
+    "wrist": "observation.images.wrist"
+  },
+
+  // ── 3. RTC real-time chunked inference ──────────────────────────────
+  // Note: in this repo RTC is guidance only (it does not change the diffusion
+  // length nor reuse the prefix KV); pure-VLA runs full-chunk execution
+  // (replan every 50 steps, same as lerobot-record), so RTC never triggers.
+  "rtc_enabled": false,         // disabled (full-chunk execution; guidance never triggers)
+  "rtc_execution_horizon": 10,  // kept at 10 to pass validation (= n_action_steps_rl or 0)
+  "actor_residual_scale": 0.0,  // 0 = non-residual; Actor outputs the full action chunk
+
+  // ── 4. Control & episode pacing ────────────────────────────────────
+  "policy_fixed_std": 0.05,     // Actor fixed Gaussian std (normalized action space)
+  "control_fps": 50.0,          // control frequency Hz
+  "steps_per_episode": 1000,    // max control steps per episode
+  "max_episodes": 1000,         // total training episodes
+  "warmup_episodes": 5,         // first N episodes run pure VLA (Actor disabled)
+  "actor_start_updates": 1000,  // Actor may only act after this many RL updates
+  "replan_every_window": true,  // true = replan every 10-step window (paper Alg. 1: reference
+                                //        chunk comes from the current observation; cost: jerky
+                                //        stop-and-go). false = full-chunk execution (replan
+                                //        every 50 steps, smoother).
+  "actor_execution_steps": 10,  // Actor steps per execution (<=10; smaller = receding horizon)
+  "reset_between_episodes": true,
+  "manual_positioning": false,  // true = manual pre-episode positioning (press p to teleop,
+                                //        press p again to start VLA); positioning data never
+                                //        enters replay and is strictly distinct from HIL;
+                                //        auto-reset is skipped when enabled. CLI overrides:
+                                //        --manual_positioning / --no-manual_positioning.
+
+  // ── 5. RL algorithm (paper-aligned: TD3-style + reference regularization) ──
+  "reference_dropout": 0.5,     // 50% chance to zero the reference chunk during training
+  "delta_weight": 0.0,          // smoothness term (not in paper; must stay 0)
+  "utd_ratio": 5,               // max 5 updates per transition
+  "critic_per_actor": 2,        // 2 critic updates per actor update
+  "online_q_weight": 1.0,       // Q maximization weight in actor loss (paper coefficient = 1)
+  "learner_warmup_updates": 0,  // extra pure-BC warmup updates (0 = no warmup, as in paper)
+  "batch_size": 256,
+  "buffer_capacity": 100000,
+
+  // ── 6. Network architecture (paper: 2-layer MLP, 256 hidden) ────────
+  "actor_hidden_dim": 256,
+  "actor_num_layers": 2,
+  "critic_hidden_dim": 256,
+  "critic_num_layers": 2,
+
+  // ── 7. Human-in-the-loop (HIL) & rewards ────────────────────────────
+  "intervention_reward_bonus": 0.0,   // intervention reward (unused in paper; keep 0)
+  "leader_hil_min_dwell_s": 2.0,      // minimum HIL dwell time
+  "intervention_release_frames": 100, // release-judgement frames after exiting HIL
+
+  // ── 8. Critical phase & automatic detection classifier ──────────────
+  "critical_frames_dir": "",     // critical-phase keyframe dir ("" = <output_dir>/critical_frames)
+  "save_critical_frames": true,  // true = save keyframes on phase switches (default on)
+  "auto_critical": false,        // true = auto-switch critical phase via classifier
+  "critical_classifier": "",     // classifier checkpoint (scripts/train_critical_classifier.py)
+  "auto_critical_threshold_on": 0.5,   // smoothed prob >= this → critical phase ON
+  "auto_critical_threshold_off": 0.35, // smoothed prob <= this → critical phase OFF
+  "auto_critical_smooth_steps": 5,     // smoothing window over chunks (small = responsive)
+  "auto_critical_override_cooldown": 3.0,  // auto-detection silence after a manual 'c' press (s)
+
+  // ── 9. Output & run mode ───────────────────────────────────────────
+  "output_dir": "outputs/rlt_stage2",
+  // "" = start a new training run. Set it to an existing checkpoint to resume training.
+  // Deployment uses its own config: configs/infer_pi05.json.
+  "resume_from": "",
+  "device": "cuda",
+  "dry_run": true,               // true = validate paths only, no hardware (required on first run)
+  "display_data": true           // show camera feeds
+}
