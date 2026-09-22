@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local configuration and secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Training artifacts
+outputs/
+checkpoints/
+results/
+runs/
+wandb/
+*.log
+*.mmap
+*.tmp
+
+# Model and dataset artifacts
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.npz
+*.pkl
+
+# Editor and OS files
+.idea/
+.vscode/
+.DS_Store
+
+# Build artifacts (vendored lerobot egg-info and friends)
+*.egg-info/
+build/
+dist/
+
+# Local experiment leftovers
+*.bak
+*.bak_*
+*.orig
+*.rej
+
+# Local, machine-specific run configs (real paths, never published)
+configs/local/
+
+# Local Hugging Face cache (created at runtime)
+.hf_cache/

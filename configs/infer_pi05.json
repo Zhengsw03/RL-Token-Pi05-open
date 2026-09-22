@@ -1,0 +1,104 @@
+{
+  // ═══════════════════════════════════════════════════════════════════
+  //  Inference / deployment config (step 6)
+  //  Usage: python scripts/infer_rlt_stage2_pi05.py --config configs/infer_pi05.json
+  //  Fill in the paths below; the actor checkpoint to run is "resume_from".
+  //  Keep "dry_run": true for the first run, then set it to false.
+  //  This file supports // and /* */ comments (JSONC).
+  // ═══════════════════════════════════════════════════════════════════
+
+  // ── Models ─────────────────────────────────────────────────────────
+  "pi05_path": "/path/to/pi05/pretrained_model",     // same VLA the policy was trained with
+  "rlt_checkpoint": "/path/to/rlt_stage1/best_checkpoint.pt",
+  "resume_from": "/path/to/rlt_stage2/final_checkpoint.pt",  // trained Stage 2 actor checkpoint to deploy
+  "tokenizer_path": "/path/to/paligemma_tokenizer",
+  "stats_path": "",                                  // "" = read normalization from the checkpoint
+
+  // ── Task and hardware ──────────────────────────────────────────────
+  "task": "Insert the bolt into the hole",           // must match the training task string
+  "follower_port": "/dev/ttyACM0",
+  "leader_port": "/dev/ttyACM1",
+  "follower_id": "so101_follower",
+  "leader_id": "so101_leader",
+  "camera_names": ["top", "wrist"],
+  "cameras": {
+    "top":   { "type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30, "fourcc": "MJPG", "warmup_s": 3 },
+    "wrist": { "type": "opencv", "index_or_path": 3, "width": 640, "height": 480, "fps": 30, "fourcc": "MJPG", "warmup_s": 3 }
+  },
+  "camera_map": {
+    "top": "observation.images.top",
+    "wrist": "observation.images.wrist"
+  },
+
+  // ── Execution ──────────────────────────────────────────────────────
+  "control_fps": 30.0,
+  "steps_per_episode": 1500,
+  "max_episodes": 1000,
+  "replan_every_window": false,      // false = execute the full chunk, replan when it runs out
+  "actor_execution_steps": 10,
+  "actor_execute_mean": true,        // deterministic mean action
+  "actor_noise_std": 0.02,
+  "reset_between_episodes": true,
+  "manual_positioning": false,       // true = place the follower by hand before each episode
+  "actor_max_relative_target": {     // per-step degree limit applied to Actor actions only
+    "shoulder_pan": 7.0, "shoulder_lift": 10.0, "elbow_flex": 8.0,
+    "wrist_flex": 8.0, "wrist_roll": 4.0, "gripper": 7.0
+  },
+  "observation_retries": 8,          // retries for a transient camera/observation fault
+  "observation_retry_delay_s": 0.5,
+  "camera_preflight_retries": 6,     // fresh-frame attempts per camera before aborting
+  "camera_preflight_delay_s": 0.5,
+
+  // ── Human takeover (HIL) ───────────────────────────────────────────
+  "leader_mirror": false,            // mirror the follower pose onto the leader (off by default)
+  "leader_mirror_torque_limit": 0.4,
+  "leader_hil_min_dwell_s": 2.0,
+  "intervention_release_frames": 60,
+  "intervention_reward_bonus": 0.0,  // unused: rewards are terminal-only
+
+  // ── Critical phase ─────────────────────────────────────────────────
+  "auto_critical": false,            // true = switch the critical phase with the classifier
+  "critical_classifier": "",         // classifier checkpoint, required when auto_critical is true
+  "actor_critical_delay_steps": 15,  // steps the critical phase must persist before the Actor acts
+  "auto_critical_threshold_on": 0.75,
+  "auto_critical_threshold_off": 0.45,
+  "auto_critical_smooth_steps": 4,
+  "auto_critical_min_on_chunks": 3,
+  "auto_critical_start_delay_steps": 60,
+  "auto_critical_once": true,
+  "auto_critical_override_cooldown": 3.0,
+  "save_critical_frames": true,      // save top/wrist frames on every phase switch
+  "critical_frames_dir": "",         // "" = <output_dir>/critical_frames
+
+  // ── Rollout recording (optional) ───────────────────────────────────
+  "record_dataset": false,           // true = record rollouts as a LeRobotDataset
+  "record_repo_id": "local/so101_deploy_rollouts",
+  "record_root": "",                 // "" = outputs/deploy_recordings/<last repo_id segment>
+  "record_task": "",                 // "" = use "task"
+  "record_videos": true,
+  "record_hil_steps": true,
+  "record_streaming_encoding": true,
+  "record_encoder_threads": 2,
+
+  // ── Rate / hidden size: must match the checkpoint ──────────────────
+  "policy_fixed_std": 0.05,
+  "actor_hidden_dim": 256,
+  "actor_num_layers": 2,
+  "critic_hidden_dim": 256,
+  "critic_num_layers": 2,
+  "reference_dropout": 0.5,
+  "delta_weight": 0.02,
+  "online_bc_weight": 10.0,
+  "actor_residual_scale": 0.0,
+
+  // ── Output, scoring and run mode ───────────────────────────────────
+  "output_dir": "outputs/rlt_deploy",
+  "save_debug_obs": false,           // true = per-episode debug_obs/ CSV + images
+  "inference_score": true,           // ask y/n after each episode and count successes
+  "device": "cuda",
+  "dry_run": true,                   // true = validate only, no hardware (required on first run)
+  "display_data": true,              // Rerun visualization
+  "display_fps": 30.0,
+  "display_session_name": "rlt_deploy",
+  "display_compressed_images": true
+}

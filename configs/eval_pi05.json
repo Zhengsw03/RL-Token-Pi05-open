@@ -1,0 +1,28 @@
+{
+  // Evaluation config — replace every path with your own local checkpoints.
+  "pi05_path": "/path/to/pi05/pretrained_model",
+  "rlt_checkpoint": "/path/to/rlt_stage1/best_checkpoint.pt",
+  "actor_checkpoint": "/path/to/rlt_stage2/final_checkpoint.pt",
+  "tokenizer_path": "/path/to/paligemma_tokenizer",
+  "stats_path": "/path/to/dataset/meta/stats.json",
+  "task": "Stack the red cube on top of the green cube",
+  "follower_port": "/dev/ttyACM0",
+  "follower_id": "so101_follower",
+  "cameras": {
+    "top": {"type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30},
+    "wrist": {"type": "opencv", "index_or_path": 1, "width": 640, "height": 480, "fps": 30}
+  },
+  "camera_map": {
+    "top": "observation.images.top",
+    "wrist": "observation.images.wrist"
+  },
+  "episodes": 10,
+  "steps_per_episode": 1000,
+  "control_fps": 50.0,
+  "rtc_execution_horizon": 10,
+  "actor_execution_steps": 10,
+  "display_data": true,
+  "score_episodes": true,
+  "device": "cuda",
+  "dry_run": true
+}
