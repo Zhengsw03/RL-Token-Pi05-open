@@ -2890,9 +2890,14 @@ def main():
                     if actual_target is None:
                         SHUTDOWN = True
                         break
-                    # Deployment recording: record every step (observation images + state + action actually sent)
+                    # Deployment recording: one frame per execution step, with its own
+                    # observation. ``obs`` was read once at the chunk boundary and would
+                    # otherwise be written for all steps of the chunk, so the recorded video
+                    # would repeat the same image until the next re-plan (chunk-length
+                    # duplicates) and the actions would not line up with their images.
                     if rollout_recorder is not None and not SHUTDOWN:
-                        rollout_recorder.add_step(obs, actual_target)
+                        step_obs = read_follower_observation("deployment step recording")
+                        rollout_recorder.add_step(step_obs if step_obs is not None else obs, actual_target)
                     if debug_dir is not None and CRITICAL_PHASE_ACTIVE:
                         debug_steps.append({
                             "step": episode_step_counter,
