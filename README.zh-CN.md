@@ -8,6 +8,7 @@
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="License"></a>
   <img src="https://img.shields.io/badge/python-3.12-blue" alt="Python 3.12">
+  <a href="https://github.com/huggingface/lerobot"><img src="https://img.shields.io/badge/LeRobot-0.6.2-ffcc00" alt="LeRobot 0.6.2"></a>
   <img src="https://img.shields.io/badge/VLA-%CF%800.5-8a2be2" alt="pi0.5">
   <img src="https://img.shields.io/badge/robot-SO--101-lightgrey" alt="SO-101">
 </p>
@@ -29,6 +30,7 @@
 - [配置项](#配置项)
 - [出问题怎么办](#出问题怎么办)
 - [致谢](#致谢)
+- [贡献指南](#贡献指南)
 
 </details>
 
@@ -77,8 +79,9 @@ pytest                          # 仅需 CPU
 
 ## 步骤 0：硬件准备
 
-工位由两条 SO-101 机械臂和两路相机组成，其中从臂负责执行动作，主臂由操作者手动引导。串口通常
-枚举为 `/dev/ttyACM0` 与 `/dev/ttyACM1`，但重启后可能互换，因此需要先确认：
+工位由两条 SO-101 机械臂和两路相机组成，其中从臂负责执行动作，主臂由操作者手动引导。任务用到的
+打印件模型放在 `assets/stl/`。串口通常枚举为 `/dev/ttyACM0` 与 `/dev/ttyACM1`，但重启后可能
+互换，因此需要先确认：
 
 ```bash
 lerobot-find-port
@@ -390,10 +393,11 @@ python scripts/infer_rlt_stage2_pi05.py --config configs/infer_pi05.json
 
 本工作在中兴通讯（ZTE）提供的场地与设备支持下完成。
 
-感谢 Physical Intelligence 团队开源 π0.5，本仓库微调的 VLA 即来自该项目。
+感谢 Physical Intelligence 团队开源 π0.5（本仓库微调的 VLA），以及 LeRobot 项目提供的采集、
+训练与部署框架。
 
-感谢中兴通讯机器人团队（ZTE Robotics）工程师、本仓库协作者
-[@Teddy-Liao](https://github.com/Teddy-Liao) 在硬件搭建与实验过程中给予的帮助。
+感谢中兴通讯工程师、本仓库贡献者 [@Teddy-Liao](https://github.com/Teddy-Liao) 与
+[@TomwKang](https://github.com/TomwKang) 在硬件搭建与实验过程中给予的帮助。
 
 <p align="center">
   <img src="assets/zte_logo_zh.png" alt="中兴通讯 ZTE" width="200">
@@ -408,6 +412,14 @@ python scripts/infer_rlt_stage2_pi05.py --config configs/infer_pi05.json
 - 本仓库作者：[@Zhengsw03](https://github.com/Zhengsw03)
 
 如果这个仓库对你有帮助，欢迎点个 star。
+
+## 🤝 贡献指南
+
+欢迎 Issue 与 PR：问题反馈、文档订正、示例、新任务复现与硬件经验都可以。报告需要包含哪些信息、
+PR 有哪些检查项见 [CONTRIBUTING.md](CONTRIBUTING.md)；中英文两份 README 保持同步，改动一处时另一处
+一并更新。贡献按 Apache License 2.0 发布。
+
+共同推进机器人进步。
 
 ## 许可证
 

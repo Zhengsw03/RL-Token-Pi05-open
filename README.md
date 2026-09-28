@@ -8,6 +8,7 @@
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="License"></a>
   <img src="https://img.shields.io/badge/python-3.12-blue" alt="Python 3.12">
+  <a href="https://github.com/huggingface/lerobot"><img src="https://img.shields.io/badge/LeRobot-0.6.2-ffcc00" alt="LeRobot 0.6.2"></a>
   <img src="https://img.shields.io/badge/VLA-%CF%800.5-8a2be2" alt="pi0.5">
   <img src="https://img.shields.io/badge/robot-SO--101-lightgrey" alt="SO-101">
 </p>
@@ -29,6 +30,7 @@
 - [Configuration](#configuration)
 - [Troubleshooting](#troubleshooting)
 - [Acknowledgements](#acknowledgements)
+- [Contributing](#contributing)
 
 </details>
 
@@ -86,9 +88,9 @@ the proxy variables before starting is recommended:
 ## Step 0: hardware
 
 The setup consists of two SO-101 arms and two cameras. The follower executes the motion,
-while the leader is guided by the operator. The serial ports normally enumerate as
-`/dev/ttyACM0` and `/dev/ttyACM1`, although the assignment can change after a reboot, so
-it should be verified first.
+while the leader is guided by the operator. The printed fixtures used by the tasks are in
+`assets/stl/`. The serial ports normally enumerate as `/dev/ttyACM0` and `/dev/ttyACM1`,
+although the assignment can change after a reboot, so it should be verified first.
 
 ```bash
 lerobot-find-port
@@ -448,10 +450,12 @@ stage are covered by `pytest tests/test_train_rlt_stage2_pi05.py -v`.
 This work was carried out with the venue and equipment support of ZTE Corporation.
 
 Thanks to the Physical Intelligence team for open-sourcing π0.5, the VLA this repository
-fine-tunes.
+fine-tunes, and to the LeRobot project for the recording, training and deployment framework
+this pipeline is built on.
 
-Thanks to [@Teddy-Liao](https://github.com/Teddy-Liao), engineer on the ZTE Robotics team and
-collaborator on this repository, for the help with the hardware and the experiments.
+Thanks to [@Teddy-Liao](https://github.com/Teddy-Liao) and [@TomwKang](https://github.com/TomwKang),
+ZTE engineers and contributors to this repository, for the help with the hardware and the
+experiments.
 
 <p align="center">
   <img src="assets/zte_logo.png" alt="ZTE" width="150">
@@ -466,6 +470,15 @@ manipulation, task planning and motion control positions.
 - Repository author: [@Zhengsw03](https://github.com/Zhengsw03)
 
 If this repository is useful for your work, a star is appreciated.
+
+## 🤝 Contributing
+
+Issues and pull requests are welcome: bug reports, documentation corrections, examples, new task
+reproductions and hardware notes. [CONTRIBUTING.md](CONTRIBUTING.md) lists what a report should
+contain and the checklist for a pull request; the two READMEs are kept in step, so a change to
+one is mirrored in the other. Contributions are released under the Apache License 2.0.
+
+Let us push robotics forward together.
 
 ## License
 
