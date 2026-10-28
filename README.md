@@ -283,7 +283,20 @@ python scripts/evaluate_critical_classifier.py \
   --precomputed_zrl outputs/critical_zrl_bolt.npz \
   --classifier outputs/critical_classifier_bolt.pt --val_episodes 6 \
   --threshold_on 0.75 --threshold_off 0.45 --smooth_steps 4 --device cuda
+
+# 5. draw the visual check
+python scripts/visualize_critical_classifier.py \
+  --precomputed_zrl outputs/critical_zrl_bolt.npz \
+  --classifier outputs/critical_classifier_bolt.pt \
+  --out_dir outputs/critical_vis --mode both \
+  --dataset /path/to/lerobot/insert_bolt --annotations annotations_bolt.json \
+  --episodes 0-11 --cam top --device cuda
 ```
+
+The visual check writes `prob_timeline.png`, with one probability curve per episode and the
+annotated interval shaded, plus `sheet_XX.png`, with the frames around each interval boundary
+and the probability under each frame. The figure below is one of those sheets, cropped to its
+first two rows.
 
 <p align="center">
   <img src="assets/critical_phase_classifier_check.jpg" alt="Critical-phase classifier check" width="780">

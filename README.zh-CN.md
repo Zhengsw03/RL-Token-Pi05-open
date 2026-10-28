@@ -254,7 +254,18 @@ python scripts/evaluate_critical_classifier.py \
   --precomputed_zrl outputs/critical_zrl_bolt.npz \
   --classifier outputs/critical_classifier_bolt.pt --val_episodes 6 \
   --threshold_on 0.75 --threshold_off 0.45 --smooth_steps 4 --device cuda
+
+# 5. 画出可视化核验图
+python scripts/visualize_critical_classifier.py \
+  --precomputed_zrl outputs/critical_zrl_bolt.npz \
+  --classifier outputs/critical_classifier_bolt.pt \
+  --out_dir outputs/critical_vis --mode both \
+  --dataset /path/to/lerobot/insert_bolt --annotations annotations_bolt.json \
+  --episodes 0-11 --cam top --device cuda
 ```
+
+核验图会写出两类文件：`prob_timeline.png` 每个回合一条概率曲线并标出人工标注区间，`sheet_XX.png` 是各
+区间边界帧的拼图，每帧下方标注分类概率。下图即其中一张拼图，裁切保留前两行。
 
 <p align="center">
   <img src="assets/critical_phase_classifier_check.jpg" alt="关键阶段分类器核验" width="780">
